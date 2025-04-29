@@ -11,11 +11,9 @@ class Student(models.Model):
         choices=[('Male', 'Male'), ('Female', 'Female')]
     )
     interest = models.TextField(max_length=50, default=" ")
-    course = models.TextField(max_length=50, default=" ")
+    course = models.TextField(max_length=50, blank=True)  # ✅ Allow course to be blank initially
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
-
-    

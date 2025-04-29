@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from .models import Student
 from .forms import StudentForm
+from .predict_course import predict_course  # ✅ Import the ML model function
 
 # View for Listing all students (with search)
 def student_list(request):
@@ -22,7 +23,10 @@ def student_create(request):
     if request.method == 'POST':
         form = StudentForm(request.POST)
         if form.is_valid():
-            form.save()
+            student = form.save(commit=False)  # Save without committing yet
+            # Predict the course
+            student.course = predict_course(student.age, student.interest, student.gender)
+            student.save()
             return redirect('student_list')
     else:
         form = StudentForm()
@@ -35,7 +39,10 @@ def student_update(request, pk):
     if request.method == "POST":
         form = StudentForm(request.POST, instance=student)
         if form.is_valid():
-            form.save()
+            student = form.save(commit=False)  # Save without committing yet
+            # Predict the course again (in case age, gender, or interest changed)
+            student.course = predict_course(student.age, student.interest, student.gender)
+            student.save()
             return redirect('student_list')
     else:
         form = StudentForm(instance=student)
