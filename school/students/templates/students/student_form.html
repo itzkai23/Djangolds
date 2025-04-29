@@ -19,7 +19,7 @@
                         {% csrf_token %}
 
                         <!-- First and Last Name in one row -->
-                        <div class="row">
+                        
                             <div class="col-md-6 mb-3">
                                 <label for="{{ form.first_name.id_for_label }}" class="form-label">First name</label>
                                 {{ form.first_name }}
@@ -34,7 +34,7 @@
                                     <div class="text-danger small">{{ form.last_name.errors }}</div>
                                 {% endif %}
                             </div>
-                        </div>
+                        
 
                         <!-- All other fields uniformly aligned -->
                         {% for field in form %}
