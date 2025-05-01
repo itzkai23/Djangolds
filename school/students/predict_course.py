@@ -1,26 +1,16 @@
 from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 
-# Sample training data
-# Features: [Age, Gender (0=Male, 1=Female), Interest_Category]
-# Categories:
-#   0 = Technology
-#   1 = Business
-#   2 = Health
-#   3 = Art
-#   4 = Engineering
-#   5 = Education
-#   6 = Other
-
+# Updated training data: [Age, Gender (0=Male, 1=Female), Interest_Category]
 X = [
     [18, 0, 0],  # BSIT
     [19, 1, 1],  # BSBA
-    [21, 1, 2],  # BSN
-    [20, 0, 4],  # BSECE
-    [22, 1, 5],  # BSEd
-    [23, 0, 6],  # General Studies
-    [18, 1, 3],  # BFA
-    [19, 0, 2],  # BSN
+    [20, 1, 2],  # BSEd
+    [21, 0, 3],  # BS Criminology
+    [22, 1, 4],  # BA Political Science
+    [23, 0, 5],  # BS Accountancy
+    [24, 1, 6],  # BA Journalism
+    [25, 0, 7],  # BS Social Work
     [20, 1, 0],  # BSIT
     [22, 0, 1],  # BSBA
 ]
@@ -28,12 +18,12 @@ X = [
 y = [
     "BSIT",
     "BSBA",
-    "BSN",
-    "BSECE",
     "BSEd",
-    "General Studies",
-    "BFA",
-    "BSN",
+    "BS Criminology",
+    "BA Political Science",
+    "BS Accountancy",
+    "BA Journalism",
+    "BS Social Work",
     "BSIT",
     "BSBA"
 ]
@@ -42,42 +32,35 @@ y = [
 model = DecisionTreeClassifier()
 model.fit(X, y)
 
-# Map interests into categories for multiple interests
+# Interest category mapper based on CMU offerings
 def map_interests(interest_texts):
     interests = []
     for interest_text in interest_texts:
         interest_text = interest_text.lower()
         if "technology" in interest_text or "computer" in interest_text or "programming" in interest_text:
-            interests.append(0)
-        elif "business" in interest_text or "entrepreneurship" in interest_text:
-            interests.append(1)
-        elif "health" in interest_text or "nursing" in interest_text or "medicine" in interest_text:
-            interests.append(2)
-        elif "art" in interest_text or "design" in interest_text:
-            interests.append(3)
-        elif "engineering" in interest_text or "machines" in interest_text:
-            interests.append(4)
-        elif "education" in interest_text or "teaching" in interest_text:
-            interests.append(5)
+            interests.append(0)  # BSIT
+        elif "business" in interest_text or "finance" in interest_text or "marketing" in interest_text:
+            interests.append(1)  # BSBA
+        elif "teaching" in interest_text or "education" in interest_text or "teacher" in interest_text:
+            interests.append(2)  # BSEd, BEEd
+        elif "crime" in interest_text or "criminology" in interest_text or "law enforcement" in interest_text:
+            interests.append(3)  # BS Criminology
+        elif "politics" in interest_text or "government" in interest_text or "public administration" in interest_text:
+            interests.append(4)  # BA Political Science / Public Admin
+        elif "accounting" in interest_text or "numbers" in interest_text or "finance" in interest_text:
+            interests.append(5)  # Accountancy
+        elif "journalism" in interest_text or "writing" in interest_text or "news" in interest_text:
+            interests.append(6)  # BA Journalism
+        elif "social work" in interest_text or "community" in interest_text or "helping" in interest_text:
+            interests.append(7)  # BS Social Work
         else:
-            interests.append(6)
+            interests.append(8)  # Other
     return interests
 
-# Prediction function to handle multiple interests
+# Prediction function
 def predict_course(age, interests, gender):
-    gender_encoded = 0 if gender == "Male" else 1
+    gender_encoded = 0 if gender.lower() == "male" else 1
     interest_encoded = map_interests(interests)
-    
-    # Handle multiple interests by selecting the most relevant one (e.g., based on frequency)
     most_common_interest = max(set(interest_encoded), key=interest_encoded.count)
-    
     features = np.array([[age, gender_encoded, most_common_interest]])
     return model.predict(features)[0]
-
-# Example of predicting for a student with multiple interests
-age = 20
-interests = ["Technology", "Health", "Education"]  # Multiple interests
-gender = "Female"
-
-predicted_course = predict_course(age, interests, gender)
-print(f"Predicted course: {predicted_course}")

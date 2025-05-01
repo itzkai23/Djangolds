@@ -12,9 +12,9 @@ def student_list(request):
             Q(first_name__icontains=query) |
             Q(last_name__icontains=query) |
             Q(email__icontains=query)
-        )
+        ).order_by('-id')  # 👈 Order search results by newest first
     else:
-        students = Student.objects.all()
+        students = Student.objects.all().order_by('-id')  # 👈 Order all by newest first
     
     return render(request, 'students/student_list.html', {'students': students})
 
