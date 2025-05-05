@@ -27,7 +27,12 @@ def student_create(request):
             # Predict the course
             student.course = predict_course(student.age, student.interest, student.gender)
             student.save()
-            return redirect('student_list')
+            
+            # Pass the predicted course to the success message
+            return render(request, 'students/student_success.html', {
+                'student': student,
+                'message': f"The suited course for {student.first_name} is {student.course}."
+            })
     else:
         form = StudentForm()
     
@@ -43,7 +48,12 @@ def student_update(request, pk):
             # Predict the course again (in case age, gender, or interest changed)
             student.course = predict_course(student.age, student.interest, student.gender)
             student.save()
-            return redirect('student_list')
+
+            # Pass the predicted course to the success message
+            return render(request, 'students/student_success.html', {
+                'student': student,
+                'message': f"The course predicted for {student.first_name} is {student.course}."
+            })
     else:
         form = StudentForm(instance=student)
 

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Success!</h4>
+        <p>{{ message }}</p>
+        <hr>
+        <a href="{% url 'student_list' %}" class="btn btn-primary">Home</a>
+    </div>
+</div>
+{% endblock %}
