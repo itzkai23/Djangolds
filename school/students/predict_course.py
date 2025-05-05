@@ -1,34 +1,10 @@
-from sklearn.tree import DecisionTreeClassifier
+import joblib
 import numpy as np
+import os
 
-X = [
-    [18, 0, 0],  # BSIT
-    [19, 1, 1],  # BSBA
-    [20, 1, 2],  # BSEd
-    [21, 0, 3],  # BS Criminology
-    [22, 1, 4],  # BA Political Science
-    [23, 0, 5],  # BS Accountancy
-    [24, 1, 6],  # BA Journalism
-    [25, 0, 7],  # BS Social Work
-    [20, 1, 0],  # BSIT
-    [22, 0, 1],  # BSBA
-]
-
-y = [
-    "BSIT",
-    "BSBA",
-    "BSEd",
-    "BS Criminology",
-    "BA Political Science",
-    "BS Accountancy",
-    "BA Journalism",
-    "BS Social Work",
-    "BSIT",
-    "BSBA"
-]
-
-model = DecisionTreeClassifier()
-model.fit(X, y)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "course_recommender.joblib")
+model = joblib.load(MODEL_PATH)
 
 def map_interests(interest_texts):
     interests = []
@@ -44,7 +20,7 @@ def map_interests(interest_texts):
             interests.append(3)  # BS Criminology
         elif "politics" in interest_text or "government" in interest_text or "public administration" in interest_text:
             interests.append(4)  # BA Political Science / Public Admin
-        elif "accounting" in interest_text or "numbers" in interest_text or "finance" in interest_text:
+        elif "accounting" in interest_text or "numbers" in interest_text:
             interests.append(5)  # Accountancy
         elif "journalism" in interest_text or "writing" in interest_text or "news" in interest_text:
             interests.append(6)  # BA Journalism
@@ -54,10 +30,13 @@ def map_interests(interest_texts):
             interests.append(8)  # Other
     return interests
 
-# Prediction function
 def predict_course(age, interests, gender):
     gender_encoded = 0 if gender.lower() == "male" else 1
     interest_encoded = map_interests(interests)
     most_common_interest = max(set(interest_encoded), key=interest_encoded.count)
     features = np.array([[age, gender_encoded, most_common_interest]])
     return model.predict(features)[0]
+
+if __name__ == "__main__":
+    prediction = predict_course(24, ["magic", "walking"], "female")
+    print("Recommended course:", prediction)
