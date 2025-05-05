@@ -1,7 +1,6 @@
 from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 
-# Updated training data: [Age, Gender (0=Male, 1=Female), Interest_Category]
 X = [
     [18, 0, 0],  # BSIT
     [19, 1, 1],  # BSBA
@@ -28,11 +27,9 @@ y = [
     "BSBA"
 ]
 
-# Train the model
 model = DecisionTreeClassifier()
 model.fit(X, y)
 
-# Interest category mapper based on CMU offerings
 def map_interests(interest_texts):
     interests = []
     for interest_text in interest_texts:
