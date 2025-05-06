@@ -37,6 +37,7 @@ def predict_course(age, interests, gender):
     features = np.array([[age, gender_encoded, most_common_interest]])
     return model.predict(features)[0]
 
+#sample 
 if __name__ == "__main__":
     prediction = predict_course(24, ["magic", "walking"], "female")
     print("Recommended course:", prediction)

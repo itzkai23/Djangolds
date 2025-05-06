@@ -3,7 +3,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import joblib
 
-# Expanded training data (X: features, y: labels)
 X = [
     [18, 0, 0], [19, 1, 0], [20, 0, 0], [21, 1, 0], [22, 0, 0],  # BSIT
     [18, 1, 1], [19, 0, 1], [20, 1, 1], [21, 0, 1], [22, 1, 1],  # BSBA
@@ -25,17 +24,14 @@ y = [
     "BS Accountancy", "BS Accountancy", "BS Accountancy", "BS Accountancy", "BS Accountancy",
     "BA Journalism", "BA Journalism", "BA Journalism", "BA Journalism", "BA Journalism",
     "BS Social Work", "BS Social Work", "BS Social Work", "BS Social Work", "BS Social Work",
-    "Other", "Other", "Other", "Other", "Other"
+    "Undefined", "Undefined", "Undefined", "Undefined", "Undefined"
 ]
 
-# Split the dataset: 80% train, 20% test
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Train the model
 model = DecisionTreeClassifier()
 model.fit(X_train, y_train)
 
-# Predict and calculate accuracy
 y_pred = model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 print(f"Model Accuracy: {accuracy * 100:.2f}%")
