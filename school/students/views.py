@@ -15,7 +15,7 @@ def student_list(request):
         ).order_by('-id')  # 👈 Order search results by newest first
     else:
         students = Student.objects.all().order_by('-id')  # 👈 Order all by newest first
-    
+
     return render(request, 'students/student_list.html', {'students': students})
 
 # View for creating a new student
@@ -24,10 +24,10 @@ def student_create(request):
         form = StudentForm(request.POST)
         if form.is_valid():
             student = form.save(commit=False)  # Save without committing yet
-            # Predict the course
-            student.course = predict_course(student.age, student.interest, student.gender)
+            interest_list = [i.strip() for i in student.interest.split(',')]
+            student.course = predict_course(student.age, interest_list, student.gender)
             student.save()
-            
+
             # Pass the predicted course to the success message
             return render(request, 'students/student_success.html', {
                 'student': student,
@@ -35,7 +35,7 @@ def student_create(request):
             })
     else:
         form = StudentForm()
-    
+
     return render(request, 'students/student_form.html', {'form': form})
 
 # View for updating an existing student
@@ -45,8 +45,10 @@ def student_update(request, pk):
         form = StudentForm(request.POST, instance=student)
         if form.is_valid():
             student = form.save(commit=False)  # Save without committing yet
+            # ✅ Convert interest string to list
+            interest_list = [i.strip() for i in student.interest.split(',')]
             # Predict the course again (in case age, gender, or interest changed)
-            student.course = predict_course(student.age, student.interest, student.gender)
+            student.course = predict_course(student.age, interest_list, student.gender)
             student.save()
 
             # Pass the predicted course to the success message

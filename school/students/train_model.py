@@ -2,37 +2,67 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import joblib
+from faker import Faker
+import random
+from predict_course import map_interests  # Import the real function used in prediction
 
-X = [
-    [18, 0, 0], [19, 1, 0], [20, 0, 0], [21, 1, 0], [22, 0, 0],  # BSIT
-    [18, 1, 1], [19, 0, 1], [20, 1, 1], [21, 0, 1], [22, 1, 1],  # BSBA
-    [18, 1, 2], [19, 1, 2], [20, 0, 2], [21, 0, 2], [22, 1, 2],  # BSEd
-    [20, 0, 3], [21, 1, 3], [22, 0, 3], [23, 1, 3], [24, 0, 3],  # Criminology
-    [20, 1, 4], [21, 0, 4], [22, 1, 4], [23, 0, 4], [24, 1, 4],  # PolSci
-    [19, 0, 5], [20, 1, 5], [21, 0, 5], [22, 1, 5], [23, 0, 5],  # Accountancy
-    [20, 1, 6], [21, 0, 6], [22, 1, 6], [23, 0, 6], [24, 1, 6],  # Journalism
-    [21, 0, 7], [22, 1, 7], [23, 0, 7], [24, 1, 7], [25, 0, 7],  # Social Work
-    [18, 1, 8], [19, 0, 8], [20, 1, 8], [21, 0, 8], [22, 1, 8],  # Others
-]
+fake = Faker()
 
-y = [
-    "BSIT", "BSIT", "BSIT", "BSIT", "BSIT",
-    "BSBA", "BSBA", "BSBA", "BSBA", "BSBA",
-    "BSEd", "BSEd", "BSEd", "BSEd", "BSEd",
-    "BS Criminology", "BS Criminology", "BS Criminology", "BS Criminology", "BS Criminology",
-    "BA Political Science", "BA Political Science", "BA Political Science", "BA Political Science", "BA Political Science",
-    "BS Accountancy", "BS Accountancy", "BS Accountancy", "BS Accountancy", "BS Accountancy",
-    "BA Journalism", "BA Journalism", "BA Journalism", "BA Journalism", "BA Journalism",
-    "BS Social Work", "BS Social Work", "BS Social Work", "BS Social Work", "BS Social Work",
-    "Undefined", "Undefined", "Undefined", "Undefined", "Undefined"
-]
+# Keywords for each interest category, aligned with map_interests()
+interest_phrases = {
+    0: ["technology", "computer", "programming"],
+    1: ["business", "finance", "marketing"],
+    2: ["teaching", "education", "teacher"],
+    3: ["crime", "criminology", "law enforcement"],
+    4: ["politics", "government", "public administration"],
+    5: ["accounting", "numbers"],
+    6: ["journalism", "writing", "news"],
+    7: ["social work", "community", "helping"],
+    8: ["drawing", "painting", "art", "sculpture", "design", "visual arts"]  # BS Fine Arts
+}
 
+interest_to_label = {
+    0: "BSIT",
+    1: "BSBA",
+    2: "BSEd",
+    3: "BS Criminology",
+    4: "BA Political Science",
+    5: "BS Accountancy",
+    6: "BA Journalism",
+    7: "BS Social Work",
+    8: "Bs Fine Arts"
+}
+
+X = []
+y = []
+
+# Generate 1000 fake records
+for _ in range(1000):
+    age = random.randint(17, 25)
+    gender_encoded = random.randint(0, 1)  # 0 = male, 1 = female
+
+    # Pick an interest group
+    interest_code = random.choices(
+        population=list(interest_to_label.keys()),
+        weights=[15, 12, 10, 8, 7, 6, 6, 6, 5],
+        k=1
+    )[0]
+
+    # Generate a fake interest phrase from the chosen group
+    raw_interest = random.choice(interest_phrases[interest_code])
+
+    # Use your map_interests() to get the interest_encoded
+    interest_encoded = map_interests([raw_interest])[0]
+
+    X.append([age, gender_encoded, interest_encoded])
+    y.append(interest_to_label[interest_encoded])
+
+# Split, train, test
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
 model = DecisionTreeClassifier()
 model.fit(X_train, y_train)
-
 y_pred = model.predict(X_test)
+
 accuracy = accuracy_score(y_test, y_pred)
 print(f"Model Accuracy: {accuracy * 100:.2f}%")
 
